@@ -1,0 +1,28 @@
+<div class="container">
+	<div class="row">
+         <form action="/submit" method="post"></form>
+		
+			<h1> New York Times Articles </h1>
+			  {{#each dbArticle}}
+			  
+					<p> Heading:{{this.heading}} <br> SUMMARY: {{this.summary}} <br>
+                        Link: {{this.link}}</p> <br>
+                        <p> <br> Note:<input type="text" name="Notes"> {{Anote}}
+
+                        </p>
+                         <input id="savenote" type="submit">
+
+                                
+                        	
+				
+			  {{/each}}
+					
+                   
+                   
+                        <input type="submit">
+					
+                </form>
+
+			</div>
+		</div>
+		
