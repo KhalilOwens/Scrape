@@ -14,6 +14,7 @@ var axios = require("axios");
 var cheerio = require("cheerio");
 var logger = require("morgan");
 
+app.use(bodyParser.urlencoded({ extended: true }));
 app.engine('handlebars', exphbs({ defaultLayout: 'main' }));
 app.set('view engine', 'handlebars');
 
@@ -26,51 +27,57 @@ mongoose.connect(MONGODB_URI);
 
 console.log("Grabbing an article");
 
+Article.remove({}, function () {
+    request('https://www.nytimes.com/', function (error, response, body) {
 
-request('https://www.nytimes.com/', function (error, response, body) {
-   
-    var $ = cheerio.load(body);
+        var $ = cheerio.load(body);
 
-    var results = [];
+        var results = [];
 
-    $(".story-heading").each(function (i, element) {
+        $(".story-heading").each(function (i, element) {
 
-        var heading = $(element).children().text();
+            var heading = $(element).children().text();
 
-        var link = $(element).children("a").attr("href");
+            var link = $(element).children("a").attr("href");
 
-        var summary = $(".summary").text();
+            var summary = $(".summary").text();
 
-        
-        results.push({
-            heading: heading,
-            link: link,
-            summary: summary
-        })
+
+            results.push({
+                heading: heading,
+                link: link,
+                summary: summary
+            })
+
+
+        });
+
+        Article.create(results)
+            .then(function (dbexample) {
+                console.log(dbexample)
+            }).catch(function (err) {
+                console.log(err.message)
+            })
+
+            ;
 
 
     });
-
-    Article.create(results)
-        .then(function (dbexample) {
-            console.log(dbexample)
-        }).catch(function (err) {
-            console.log(err.message)
-        })
-
-        ;
-
 
 });
 
 
 
-app.post("/submit", function (req, res) {
-   // event.preventDefault();
-    Notes.create(req.body)
-        .then(function (Anote) {
 
-            return Article.findOneAndUpdate({}, { $push: { Notes: Anote_id } }, { new: true });
+
+app.post("/articles/:id", function (req, res) {
+    // event.preventDefault();
+    console.log(req.body);
+    Notes.create({
+        body: req.body.Notes
+    }).then(function (Anote) {
+            console.log(Anote);
+            return Article.findOneAndUpdate({ _id: req.params.id },{ $push: { Notes: Anote._id } }, { new: true });
         }).then(function (dbArticle) {
             res.json(dbArticle);
         }).catch(function (err) {
@@ -99,7 +106,9 @@ app.get("/populated", function (req, res) {
 app.get("/articles", function (req, res) {
     // Grab every document in the Articles collection
     Article.find({})
+        .populate("Notes")
         .then(function (dbArticle) {
+            //console.log('wtf');
             // If we were able to successfully find Articles, send them back to the client
             res.render('index', { dbArticle });
         })

@@ -1,28 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>Articles</title>
+  <meta charset="UTF-8">
+  <!-- Latest compiled and minified CSS -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+  <!-- Optional theme -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap-theme.min.css">
+  <link rel="stylesheet" href="/assets/css/style.css" type="text/css" />
+</head>
 <div class="container">
-	<div class="row">
-         <form action="/submit" method="post"></form>
-		
-			<h1> New York Times Articles </h1>
-			  {{#each dbArticle}}
-			  
-					<p> Heading:{{this.heading}} <br> SUMMARY: {{this.summary}} <br>
-                        Link: {{this.link}}</p> <br>
-                        <p> <br> Note:<input type="text" name="Notes"> {{Anote}}
 
-                        </p>
-                         <input id="savenote" type="submit">
+  <h1 class="jumbotron"> New York Times Articles </h1>
+  {{#each dbArticle}}
+  <div class="page-header">
+    <h1>
+      <small>{{this.heading}}</small>
+    </h1>
+  </div>
 
-                                
-                        	
-				
-			  {{/each}}
-					
-                   
-                   
-                        <input type="submit">
-					
-                </form>
+  <br>
+  <p> {{this.summary}} </p>
+  <br>
+  <a href=""> Link: {{this.link}}</a>
+  <br>
+  <br>
+  <div class="row">
+    <div class="col-lg-6">
+      <div class="input-group">
+        <span class="input-group-btn">
+         <button id="savenote" data-id="{{this.id}}" class="btn btn-default" type="button">Submit!</button>
+        </span>
+        <input id="Notes"type="text" class="form-control" placeholder="Leave comment...">
 
-			</div>
-		</div>
-		
+      </div>
+      <!-- /input-group -->
+      {{#each this.Notes}}
+        <p>Comments: {{this.body}}</p>
+      {{/each}}
+    </div>
+    <!-- /.col-lg-6 -->
+    {{/each}}
+    
+  </div>
+
+</html>
